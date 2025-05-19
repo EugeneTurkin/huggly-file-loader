@@ -11,7 +11,9 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-downloads/
+# downloads/
+autoloader/downloads/*
+!autoloader/downloads/__init__.py
 eggs/
 .eggs/
 lib/
@@ -172,3 +174,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+.vscode
