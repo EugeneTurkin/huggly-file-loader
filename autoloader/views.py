@@ -23,8 +23,9 @@ def index(request):
 def download_file(request):
     network_disk = settings.STORAGE_PATH
     file_loader = FileLoader(
-        settings.DOWNLOADS_PATH,
-        settings.YA_RES_META_ENDP,
+        file_repo=settings.DOWNLOADS_PATH,
+        yandex_resource_download_endp=settings.YANDEX_RESOURCE_DOWNLOAD_ENDP,
+        yandex_resource_meta_endp=settings.YANDEX_RESOURCE_METADATA_ENDP,
     )
     sourcelink = request.POST["sourcelink"]
     destdir = network_disk / request.POST["destdir"]

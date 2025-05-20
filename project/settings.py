@@ -123,6 +123,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom Autoloader settings
-STORAGE_PATH = Path("Z:")
 DOWNLOADS_PATH = BASE_DIR / "autoloader" / "downloads"
-YA_RES_META_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources"""
+STORAGE_PATH = Path("Z:")
+YANDEX_RESOURCE_DOWNLOAD_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources/download"""
+YANDEX_RESOURCE_METADATA_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources"""
