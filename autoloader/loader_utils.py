@@ -1,4 +1,6 @@
+import os
 import requests
+import zipfile
 
 
 class FileLoader:
@@ -41,12 +43,17 @@ class FileLoader:
                 dl_link = response.json()["href"]
             with requests.get(dl_link, stream=True) as resp:
                 resp.raise_for_status()
-                with open(f"{self.file_repo / resource_metadata["name"]}.zip", 'wb') as f:
+                with open(self.file_repo / f"ARCHIVED {resource_metadata["name"]}.zip", 'wb') as f:
                     for chunk in resp.iter_content(chunk_size=8192):
                         f.write(chunk)
-            dl_file_path = self.file_repo / f"{resource_metadata["name"]}.zip"
+            dl_file_path = self.file_repo / f"ARCHIVED {resource_metadata["name"]}.zip"
             if not dl_file_path.exists():
                 raise Exception("path to downloaded file does not exist")
+
+            with zipfile.ZipFile(dl_file_path) as zip_file:
+                zip_file.extractall(path=self.file_repo / f"{resource_metadata["name"]}")
+            os.remove(dl_file_path)
+            dl_file_path = self.file_repo / f"{resource_metadata["name"]}"
 
         else:
             with requests.get(self.yandex_resource_download_endp, params=params) as response:
