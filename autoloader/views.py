@@ -42,3 +42,12 @@ def download_file(request):
         "autoloader/download_file.html",
         context_download_file,
     )
+
+
+def choose_directory(request):
+    network_disk = settings.STORAGE_PATH
+    
+    if not os.access(network_disk, os.F_OK):  # TODO: check whether Z:/ is online properly
+        raise Exception("Target path is unavailiable or doesn't exist")
+    
+    

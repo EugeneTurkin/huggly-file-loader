@@ -8,11 +8,11 @@
     <form action="{% url 'download_file' %}" method="post" target="_self" autocomplete="off">
       {% csrf_token %}
       <fieldset>
-        <legend>Download file</legend>
-        <label>Link</label>
-        <input type="url" id="sourcelink" name="sourcelink">
+        <legend>Upload file</legend>
         <label>Directory</label>
         <select id="destdir" name="destdir">
+          <label>Link</label>
+          <input type="url" id="sourcelink" name="sourcelink">
           {% for dir in existing_dirs %}
             <option value="{{ dir }}">{{ dir }}</option>
           {% endfor %}
