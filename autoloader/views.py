@@ -1,4 +1,3 @@
-import shutil
 import os
 
 from django.conf import settings
@@ -8,7 +7,7 @@ from autoloader.loader_utils import FileLoader
 
 
 def index(request):
-    network_disk = settings.STORAGE_PATH
+    network_disk = settings.STORAGE_PATH  # TODO: явно указать файл с настройками
     
     if not os.access(network_disk, os.F_OK):  # TODO: check whether Z:/ is online properly
         raise Exception("Target path is unavailiable or doesn't exist")
@@ -34,8 +33,7 @@ def download_file(request):
         "destdir": destdir,
     }
     
-    file_path = file_loader.download_from_yandex(sourcelink)
-    shutil.move(file_path, destdir, copy_function=shutil.copy2)
+    file_loader.download_from_yandex(link=sourcelink, dir=destdir)
     
     return render(
         request,
