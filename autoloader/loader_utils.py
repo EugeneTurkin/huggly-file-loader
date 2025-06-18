@@ -1,4 +1,4 @@
-from autoloader.tasks import dl_yandex_dir
+import autoloader.tasks as tasks
 
 
 class FileLoader:
@@ -7,11 +7,10 @@ class FileLoader:
         self.yandex_resource_meta_endp = yandex_resource_meta_endp
         self.yandex_resource_download_endp = yandex_resource_download_endp
 
-    def download_from_yandex(self, link: str, dir: str):
-        if not link.startswith(("https://disk.yandex.ru", "disk.yandex.ru")):
-            raise Exception("неверная ссылка. (должна быть в виде 'disk.yandex.ru...')")
+    def download(self, link: str, dir: str):
+        if link.startswith(("https://disk.yandex.ru", "disk.yandex.ru")):
+            tasks.dl_yandex_dir(link, self.yandex_resource_meta_endp, self.yandex_resource_download_endp, dir, self.file_repo)
+        elif link.startswith(("https://vk.com", "https://vkvideo.ru")):
+            tasks.dl_vk_video(link, dir, self.file_repo)
 
-
-        dl_yandex_dir(link, self.yandex_resource_meta_endp, self.yandex_resource_download_endp, dir, self.file_repo)
-        
         return None

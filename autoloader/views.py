@@ -33,7 +33,7 @@ def download_file(request):
         "destdir": destdir,
     }
     
-    file_loader.download_from_yandex(link=sourcelink, dir=destdir)
+    file_loader.download(link=sourcelink, dir=destdir)
     
     return render(
         request,

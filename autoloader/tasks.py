@@ -1,8 +1,29 @@
 import os
+from pathlib import Path
+import requests
 import shutil
 import zipfile
+
 from huey.contrib.djhuey import task
-import requests
+from yt_dlp import YoutubeDL
+
+
+@task()
+def dl_vk_video(link, dir, dls):
+    ydl_opts = {
+        "paths": {
+            "home": str(dls),
+        }
+    }
+    with YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(link, download=True)
+        name = Path(info["requested_downloads"][0]["filename"])
+        ext = Path(info["requested_downloads"][0]["ext"])
+        ptd = name.parent / f"brodude.{ext}"
+        os.rename(name, ptd)
+    
+    shutil.move(ptd, dir, copy_function=shutil.copy2)  # TODO: если в конечном пункте уже существует файл или директория с таким именем, таск упадёт с ошибкой!
+
 
 
 @task()
@@ -65,4 +86,3 @@ def dl_yandex_dir(link, yandex_resource_meta_endp, yandex_resource_download_endp
     shutil.move(dl_file_path, dir, copy_function=shutil.copy2)  # TODO: если в конечном пункте уже существует файл или директория с таким именем, таск упадёт с ошибкой!
 
     return None
-
