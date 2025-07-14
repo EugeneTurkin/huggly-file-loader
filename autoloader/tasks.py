@@ -20,9 +20,9 @@ def dl_vk_video(link, dir, dls):
         name = Path(info["requested_downloads"][0]["filename"])
         ext = Path(info["requested_downloads"][0]["ext"])
         ptd = name.parent / f"brodude.{ext}"
-        os.rename(name, ptd)
+        # os.rename(name, ptd)
     
-    shutil.move(ptd, dir, copy_function=shutil.copy2)  # TODO: если в конечном пункте уже существует файл или директория с таким именем, таск упадёт с ошибкой!
+    shutil.move(name, dir, copy_function=shutil.copy2)  # TODO: если в конечном пункте уже существует файл или директория с таким именем, таск упадёт с ошибкой!
 
 
 
@@ -53,6 +53,7 @@ def dl_yandex_dir(link, yandex_resource_meta_endp, yandex_resource_download_endp
             raise Exception("path to downloaded file does not exist")
 
     elif  resource_metadata["type"] == "dir":
+        resource_metadata["name"] = resource_metadata["name"].strip(" ")  # TODO: если исходное имя файла сожержит трейлинг пробелы, возникают проблемы с извлечением на 69 (nice) строке, подумать о валидации
         with requests.get(yandex_resource_download_endp, params=params) as response:
             response.raise_for_status()
             dl_link = response.json()["href"]
@@ -86,3 +87,45 @@ def dl_yandex_dir(link, yandex_resource_meta_endp, yandex_resource_download_endp
     shutil.move(dl_file_path, dir, copy_function=shutil.copy2)  # TODO: если в конечном пункте уже существует файл или директория с таким именем, таск упадёт с ошибкой!
 
     return None
+
+
+@task()
+def upload_to_yandex(fpath, destemail, src):
+    from django.conf import settings
+    from django.core.mail import send_mail
+
+    fpath1 = f"disk:/JOB KOMIGOR/{fpath}"
+    headers = {
+        "Authorization": f"OAuth {settings.YANDEX_KOMIGOR_OAUTH_KEY}"
+    }
+    params = {
+        "path": fpath1,
+    }
+    print(headers)
+    print(params)
+    l1 = "https://cloud-api.yandex.net/v1/disk/resources/upload"
+    l2 = "https://cloud-api.yandex.net/v1/disk/resources/publish"
+    l3 = "https://cloud-api.yandex.net/v1/disk/resources"
+
+    with requests.get(l1, headers=headers, params=params) as response:
+        upl_link = response.json()["href"]
+        print("upload link recieved")
+    
+    with open(src, "rb") as f:
+        print("file opened")
+        requests.put(upl_link, data=f)
+        print("file uploaded")
+    
+    with requests.put(l2, headers=headers, params=params) as re:
+        print("done")
+    
+    with requests.get(l3, headers=headers, params=params) as res:
+        dl_link = res.json()["public_url"]
+    
+    send_mail(
+        f"Ссылка -- {fpath}",
+        dl_link,
+        "test@komigor.com",
+        recipient_list=[destemail],
+        fail_silently=True,
+    )

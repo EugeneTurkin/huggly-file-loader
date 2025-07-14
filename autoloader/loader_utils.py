@@ -12,5 +12,3 @@ class FileLoader:
             tasks.dl_yandex_dir(link, self.yandex_resource_meta_endp, self.yandex_resource_download_endp, dir, self.file_repo)
         elif link.startswith(("https://vk.com", "https://vkvideo.ru")):
             tasks.dl_vk_video(link, dir, self.file_repo)
-
-        return None

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+import sentry_sdk
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,6 +26,14 @@ SECRET_KEY = 'django-insecure-y!_gma15e-lae#_++0)$)g_q1oc5b8ia$@jmofu4k&&jnjiy*d
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+if not DEBUG:
+    sentry_sdk.init(
+    dsn="https://8a1862f83d79c6707b1ab087f111b058@o4509648433577984.ingest.de.sentry.io/4509648440131664",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
 
 ALLOWED_HOSTS = ['*']
 
@@ -124,6 +134,37 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+            "formatter": "verbose",
+        },
+        "console1": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "autoloader": {
+            "propagate": True,
+            "level": "INFO",
+            "handlers": ["console1", "file"],
+        }
+    },
+}
+
 # Huey task queue
 HUEY = {
     'huey_class': 'huey.SqliteHuey',  # Huey implementation to use.
@@ -146,8 +187,17 @@ HUEY = {
     },
 }
 
-# Custom Autoloader settings
+# Custom Huggly settings
 DOWNLOADS_PATH = BASE_DIR / "autoloader" / "downloads"
 STORAGE_PATH = Path("Z:")
+YANDEX_KOMIGOR_OAUTH_KEY = r"y0__xD3yPHOBRjdzTggxIjY0xNh8oggs0WNu2_0eA_vwjwwlHSi5Q"
 YANDEX_RESOURCE_DOWNLOAD_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources/download"""
 YANDEX_RESOURCE_METADATA_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources"""
+
+# Django Mail settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'nicmail.ru'  # Replace with your SMTP server
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'test@komigor.com'
+EMAIL_HOST_PASSWORD = 'Test159753'
