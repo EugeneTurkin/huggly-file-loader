@@ -1,24 +1,7 @@
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <title>My test page</title>
-  </head>
-  <body>
-    <form action="{% url 'download_file' %}" method="post" target="_self" autocomplete="off">
-      {% csrf_token %}
-      <fieldset>
-        <legend>Download file</legend>
-        <label>Link</label>
-        <input type="url" id="sourcelink" name="sourcelink">
-        <label>Directory</label>
-        <select id="destdir" name="destdir">
-          {% for dir in existing_dirs %}
-            <option value="{{ dir }}">{{ dir }}</option>
-          {% endfor %}
-          <input type="submit" value="Submit">
-        </select>
-      </fieldset>
-    </form>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}KOMIGOR: FILES{% endblock %}
+
+{% block content %}
+<h1>Добро пожаловать! Тут качают файлы!</h1>
+{% endblock %}

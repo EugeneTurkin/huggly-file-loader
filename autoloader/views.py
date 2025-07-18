@@ -14,21 +14,26 @@ def trigger_error(request):
 
 
 def index(request):
+    return render(request, "autoloader/index.html")
+
+
+def index1(request):
     destination_path = settings.STORAGE_PATH
     
     if not os.access(destination_path, os.F_OK):
-        logger.error("Путь назначения недоступен: проверьте конфигурацию и состояние хранилища")
+        logger.critical("Путь недоступен: проверьте правильность конфигурации и состояние пути назначения")
         raise Exception("Target path is unavailiable or doesn't exist")
-    if not os.access(destination_path, os.X_OK) or not os.access(destination_path, os.W_OK):
-        logger.warning("Похоже, сервер приложения не обладает полными правами в указанном пути назначения!")
+    if not os.access(destination_path, os.W_OK):
+        logger.warning("Похоже, сервер приложения не обладает правами записи в пути назначения!")
+    if not os.access(destination_path, os.X_OK):
+        logger.warning("Похоже, сервер приложения не обладает правами выполнения в пути назначения!")
     else:
         logger.info("Путь назначения доступен с полными правами")
     
     existing_dirs = os.listdir(destination_path)
-    context_index = {
-        "existing_dirs": existing_dirs,
-    }
-    return render(request, "autoloader/index.html", context_index)
+    context = dict(existing_dirs=existing_dirs)
+    
+    return render(request, "autoloader/download_start.html", context)
 
 
 def download_file(request):

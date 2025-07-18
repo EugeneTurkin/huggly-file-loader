@@ -34,7 +34,7 @@ def dl_yandex_dir(link, yandex_resource_meta_endp, yandex_resource_download_endp
         response.raise_for_status()
         resource_metadata = response.json()
 
-    if resource_metadata["type"] == "file" and resource_metadata["mime_type"].split("/")[0] == "video":
+    if resource_metadata["type"] == "file" and os.path.split(resource_metadata["mime_type"]) == "video":
         file_metadata = {
             "name": resource_metadata["name"],
             "format": resource_metadata["mime_type"].split("/")[1],
