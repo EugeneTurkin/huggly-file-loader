@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
-import requests
 import shutil
 import zipfile
 
+from django.conf import settings
+from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 from yt_dlp import YoutubeDL
+import requests
+
+from autoloader.enums import YandexDiskAPI, YandexDiskFolder
 
 
 @task()
@@ -90,24 +94,12 @@ def dl_yandex_dir(link, yandex_resource_meta_endp, yandex_resource_download_endp
 
 
 @task()
-def upload_to_yandex(fpath, destemail, src):
-    from django.conf import settings
-    from django.core.mail import send_mail
-
-    fpath1 = f"disk:/JOB KOMIGOR/{fpath}"
-    headers = {
-        "Authorization": f"OAuth {settings.YANDEX_KOMIGOR_OAUTH_KEY}"
-    }
-    params = {
-        "path": fpath1,
-    }
-    print(headers)
-    print(params)
-    l1 = "https://cloud-api.yandex.net/v1/disk/resources/upload"
-    l2 = "https://cloud-api.yandex.net/v1/disk/resources/publish"
-    l3 = "https://cloud-api.yandex.net/v1/disk/resources"
-
-    with requests.get(l1, headers=headers, params=params) as response:
+def upload_to_yandex(fname, recipient_email, src):
+    yandex_disk_fpath = YandexDiskFolder.JOB_KOMIGOR + fname
+    headers = dict(Authorization=f"OAuth {settings.YANDEX_KOMIGOR_OAUTH_KEY}")
+    params = dict(path=yandex_disk_fpath)
+    
+    with requests.get(YandexDiskAPI.UPLOAD, headers=headers, params=params) as response:
         upl_link = response.json()["href"]
         print("upload link recieved")
     
@@ -116,16 +108,31 @@ def upload_to_yandex(fpath, destemail, src):
         requests.put(upl_link, data=f)
         print("file uploaded")
     
-    with requests.put(l2, headers=headers, params=params) as re:
+    with requests.put(YandexDiskAPI.PUBLISH, headers=headers, params=params) as re:
         print("done")
     
-    with requests.get(l3, headers=headers, params=params) as res:
+    with requests.get(YandexDiskAPI.RESOURCE_META, headers=headers, params=params) as res:
         dl_link = res.json()["public_url"]
     
     send_mail(
-        f"Ссылка -- {fpath}",
+        f"Ссылка -- {fname}",
         dl_link,
         "test@komigor.com",
-        recipient_list=[destemail],
+        recipient_list=[recipient_email],
+        fail_silently=True,
+    )
+
+
+@task()
+def ph(fpath: str | Path, recipient_email: str, fname: str) -> None:
+    client = YandexClient(settings.YANDEX_KOMIGOR_OAUTH_KEY)
+
+    yandex_file_public_url = client.upload(fpath, fname)
+
+    send_mail(
+        subject=f"Ссылка -- {fname}",
+        message=yandex_file_public_url,
+        from_email=...,  # TODO
+        recipient_list=[recipient_email],
         fail_silently=True,
     )
