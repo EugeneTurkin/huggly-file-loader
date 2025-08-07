@@ -1,0 +1,100 @@
+ignore = [
+    "D203",  # ignores D203 (one-blank-line-before-class) since we use D211 (no-blank-line-before-class)
+    "D213",  # ignores D213 (multi-line-summary-second-line) since we use D212 (multi-line-summary-first-line)
+    "N818",  # ignores N818 (error-suffix-on-exception-name) since we use other suffixes like "Exception"
+    "S101",  # ignores S101 since we don't use python optiomizations with "-O"
+]
+
+line-length = 120
+
+select = [
+    "ALL",  # enable all rules by default
+]
+
+
+[per-file-ignores]
+
+# ignore checks that are raised only regarding SQLAlchemy models
+"src/**/models.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
+# ignore checks that are raised only when using FastAPI routes
+"src/**/routes.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
+# ignore checks that are raised only when using Pydantic models
+"src/**/schemas.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
+# files with fixtures
+"tests/**/conftest.py" = [
+    "ARG001",  # Unused function argument: {name}
+]
+
+# files with tests
+"tests/*test_*" = [
+    "ANN",  # Absence of function annotations and type comments.
+    "ARG001",  # Unused function argument: {name}
+    "D",  # Missing docstrings.
+    "PLR2004",  # Magic value used in comparison, consider replacing 200 with a constant variable.
+    "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`.
+    "S101",  # Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+]
+
+# fixtures file
+"tests/conftest.py" = [
+    "ANN",  # Absence of function annotations and type comments.
+    "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`.
+]
+
+
+[flake8-annotations]
+
+# Whether to suppress ANN401 for dynamically typed *args and **kwargs arguments
+allow-star-arg-any = true
+
+
+[flake8-bugbear]
+# Allow default arguments like, e.g., `data: List[str] = fastapi.Query(None)`.
+extend-immutable-calls = ["fastapi.Depends"]
+
+
+[flake8-type-checking]
+
+# Exempt certain modules from needing to be moved into type-checking blocks.
+exempt-modules = []
+
+# Exempt classes that list any of the enumerated classes
+# as a base class from needing to be moved into type-checking blocks.
+runtime-evaluated-base-classes = [
+    # classes inherited from classes listed below
+    # can contain type definitions which are used at runtime
+    "pydantic.BaseSettings",
+]
+
+# Enforce TC001, TC002, and TC003 rules even when valid runtime imports are present for the same module.
+strict = true
+
+
+[isort]
+
+# A list of modules to consider first-party, regardless of whether they
+# can be identified as such via introspection of the local filesystem.
+known-first-party = ["autoloader"]
+
+# The number of blank lines to place after imports.
+lines-after-imports = 2
+
+# Order imports by type, which is determined by case, in addition to alphabetically.
+order-by-type = false
+
+# Add the specified import line to all files.
+required-imports = ["from __future__ import annotations"]
+
+
+[pep8-naming]
+
+# Indicate that the method should be treated as a class method (in addition to the builtin @classmethod).

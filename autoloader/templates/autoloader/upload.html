@@ -1,22 +1,19 @@
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <title>Выложить файл</title>
-  </head>
-  <body>
-    <form action="{% url 'upload_file_to_yandex_disk_final' %}" method="post" target="_self" autocomplete="off">
-      {% csrf_token %}
-      <fieldset>
-        <legend>Выберите папку, где находится файл</legend>
-        <label>Папка</label>
-        <select id="destdir" name="destdir">
-          {% for dir in existing_dirs %}
-            <option value="{{ dir }}">{{ dir }}</option>
-          {% endfor %}
-        </select>
-        <input type="submit" value="Выбрать">
-      </fieldset>
-    </form>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Коми Гор: загрузить{% endblock %}
+
+{% block content %}
+<form action="{% url 'files_endpoint' %}" method="post" target="_self" autocomplete="on">
+  {% csrf_token %}
+  <fieldset>
+    <legend>Выберите файл</legend>
+    <label>Файлы в папке для загрузки</label>
+    <select id="files_to_upload" name="fname">
+      {% for fname in storage %}
+        <option value="{{ fname }}">{{ fname }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Выбрать">
+  </fieldset>
+</form>
+{% endblock %}

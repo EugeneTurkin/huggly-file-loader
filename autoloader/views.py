@@ -1,104 +1,33 @@
-import logging
-import os
+from __future__ import annotations
 
-from django.conf import settings
+from typing import TYPE_CHECKING
+
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.views import View
+from django.views.decorators.http import require_http_methods
 
-from autoloader.loader_utils import FileLoader
-
-
-logger = logging.getLogger(__name__)
-
-def trigger_error(request):
-    division_by_zero = 1 / 0
+from autoloader import controllers
 
 
-def index(request):
-    return render(request, "autoloader/index.html")
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
-def index1(request):
-    destination_path = settings.STORAGE_PATH
+require_http_methods(["GET"])
+def index(request: HttpRequest) -> HttpResponse:
+    return render(request, "index.html")
+
+
+require_http_methods(["GET"])
+def upload(request: HttpRequest) -> HttpResponse:
+    context = controllers.upload()
+    return render(request, "autoloader/upload.html", context=context)
+
+
+class Files(View):
+    def get(self, request):
+        ...
     
-    if not os.access(destination_path, os.F_OK):
-        logger.critical("Путь недоступен: проверьте правильность конфигурации и состояние пути назначения")
-        raise Exception("Target path is unavailiable or doesn't exist")
-    if not os.access(destination_path, os.W_OK):
-        logger.warning("Похоже, сервер приложения не обладает правами записи в пути назначения!")
-    if not os.access(destination_path, os.X_OK):
-        logger.warning("Похоже, сервер приложения не обладает правами выполнения в пути назначения!")
-    else:
-        logger.info("Путь назначения доступен с полными правами")
-    
-    existing_dirs = os.listdir(destination_path)
-    context = dict(existing_dirs=existing_dirs)
-    
-    return render(request, "autoloader/download_start.html", context)
-
-
-def download_file(request):
-    network_disk = settings.STORAGE_PATH
-    file_loader = FileLoader(
-        file_repo=settings.DOWNLOADS_PATH,
-        yandex_resource_download_endp=settings.YANDEX_RESOURCE_DOWNLOAD_ENDP,
-        yandex_resource_meta_endp=settings.YANDEX_RESOURCE_METADATA_ENDP,
-    )
-    sourcelink = request.POST["sourcelink"]
-    destdir = network_disk / request.POST["destdir"]
-    context_download_file = {
-        "sourcelink": sourcelink,
-        "destdir": destdir,
-    }
-    
-    file_loader.download(link=sourcelink, dir=destdir)
-    
-    return render(
-        request,
-        "autoloader/download_file.html",
-        context_download_file,
-    )
-
-
-def upload_file_to_yandex_disk(request):
-    network_disk = settings.STORAGE_PATH  # TODO: явно указать файл с настройками
-    
-    if not os.access(network_disk, os.F_OK):  # TODO: check whether Z:/ is online properly
-        raise Exception("Target path is unavailiable or doesn't exist")
-    
-    existing_dirs = os.listdir(network_disk)
-    context = {
-        "existing_dirs": existing_dirs,
-    }
-    return render(request, "autoloader/upload.html", context)
-
-
-def upload_file_to_yandex_disk_final(request):
-    network_disk = settings.STORAGE_PATH  # TODO: явно указать файл с настройками
-    fpath = request.POST["destdir"]
-    
-    existing_files = os.listdir(network_disk / fpath)
-    context1 = {
-        "chosen_dir": fpath,
-        "existing_dirs": existing_files,
-    }
-    return render(request, "autoloader/upload_meta.html", context1)
-
-
-def yapload(request):
-    network_disk = settings.STORAGE_PATH  # TODO: явно указать файл с настройками
-    src = request.POST["chosen"]
-    fpath = request.POST["fpath"]
-    src = network_disk / src / fpath
-    destemail = request.POST["destemail"]
-    from autoloader.tasks import upload_to_yandex
-
-    upload_to_yandex(fpath, destemail, src)
-    context = {
-        "destdir": fpath,
-        "sourcelink": destemail,
-    }
-    return render(
-        request,
-        "autoloader/download_file1.html",
-        context,
-    )
+    def post(self, request):
+        ...
