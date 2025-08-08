@@ -3,7 +3,7 @@
 {% block title %}Коми Гор: загрузить{% endblock %}
 
 {% block content %}
-<form action="{% url 'files_endpoint' %}" method="post" target="_self" autocomplete="on">
+<form action="{% url 'upload_file' %}" method="post" target="_self" autocomplete="on">
   {% csrf_token %}
   <fieldset>
     <legend>Выберите файл</legend>

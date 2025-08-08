@@ -5,7 +5,11 @@ import os
 from django.conf import settings
 
 
-def upload() -> dict:
+def get_upload_data() -> dict:
     storage = [file.name for file in os.scandir(settings.STORAGE_DIR_PATH) if file.is_file()]
     context = dict(storage=storage)
     return context
+
+
+def upload_file():
+    ...
