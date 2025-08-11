@@ -1,21 +1,16 @@
 from django.urls import include, path
+from django.views.decorators.http import require_http_methods
 
 from autoloader import views
 
-
-# urlpatterns = [
-#     path("", views.index, name="index"),
-#     path("upload/", views.upload, name="submit_upload_data"),
-#     path("upload/", views.upload, name="upload_file"),
-# ]
 
 urlpatterns = [
     path("", views.index, name="index"),
     path(
         "upload/", include(
             [
-                path("", views.submit_upload_data, name="submit_upload_data"),
-                path("execute/", views.upload_file_by_data, name="upload_file"),
+                path("", views.Upload.as_view(), name="submit_upload_data"),
+                path("", views.Upload.as_view(), name="upload_file"),
             ]
         )
     ),
