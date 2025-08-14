@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from autoloader.models import Ticket
+from autoloader.models import Task
 
 
-admin.site.register(Ticket)
+admin.site.register(Task)

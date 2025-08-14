@@ -9,8 +9,8 @@ urlpatterns = [
     path(
         "upload/", include(
             [
-                path("", views.Upload.as_view(), name="submit_upload_data"),
-                path("", views.Upload.as_view(), name="upload_file"),
+                path("", views.submit_upload_data, name="submit_upload_data"),
+                path("/execute", views.execute_upload, name="execute_upload"),
             ]
         )
     ),

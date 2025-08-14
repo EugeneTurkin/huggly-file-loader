@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Коми Гор: загрузить{% endblock %}
+
+{% block content %}
+<form action="{% url 'upload_file' %}" method="post" target="_self" autocomplete="on">
+  {% csrf_token %}
+  <fieldset>
+    <legend>Выберите файл</legend>
+    <label>Файлы в папке для загрузки</label>
+    <select id="files_to_upload" name="fname">
+      {% for fname in storage %}
+        <option value="{{ fname }}">{{ fname }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Выбрать">
+  </fieldset>
+</form>
+{% endblock %}
