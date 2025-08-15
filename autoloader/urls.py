@@ -10,7 +10,7 @@ urlpatterns = [
         "upload/", include(
             [
                 path("", views.submit_upload_data, name="submit_upload_data"),
-                path("/execute", views.execute_upload, name="execute_upload"),
+                path("execute/", views.execute_upload, name="execute_upload"),
             ]
         )
     ),

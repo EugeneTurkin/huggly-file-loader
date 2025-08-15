@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 
-from autoloader.models import Task
+from autoloader.models import UploadTask
 
 
 # class UploadDataForm(forms.Form):
@@ -17,5 +17,5 @@ from autoloader.models import Task
 
 class UploadDataForm(forms.ModelForm):
     class Meta:
-        model = Task
-        fields = ["source", "notification_recipient"]
+        model = UploadTask
+        fields = ["source", "destination", "notification_recipient"]

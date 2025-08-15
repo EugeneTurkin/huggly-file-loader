@@ -1,3 +1,4 @@
+from abc import ABC
 from pathlib import Path
 
 import requests

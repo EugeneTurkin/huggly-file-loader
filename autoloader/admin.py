@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from autoloader.models import Task
+from autoloader.models import UploadTask
 
 
-admin.site.register(Task)
+admin.site.register(UploadTask)

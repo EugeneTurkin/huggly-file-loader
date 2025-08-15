@@ -1,36 +1,40 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
 
 class Task(models.Model):
-    class TaskType(models.TextChoices):
-        UPLOAD = "upload"
+    class Meta:
+        abstract = True
     
+    class Action(models.TextChoices):
+        UPLOAD = "загрузка"
+
     class Status(models.TextChoices):
-        IN_PROGRESS = "in progress"
-        DONE = "done"
-        FAILED = "failed"
+        IN_PROGRESS = "выполняется"
+        DONE = "завершен"
+        FAILED = "ошибка"
 
     owner = models.TextField(default="admin", null=False)
-    notification_recipient = models.EmailField(null=False) 
-    task_type = models.TextField(choices=TaskType, null=False)
+    action = models.TextField(choices=Action, null=False)
     creation_ts = models.DateTimeField(default=timezone.now)
+    
+    # Fields to be displayed by a form
+    notification_recipient = models.EmailField(null=False) 
     status = models.TextField(choices=Status)
+
+    # Fields to be rewritten by child classes
     destination = models.CharField(null=False)
-    source = models.FilePathField(path="Z:/НА МОСКВУ/test", null=False)
+    source = models.TextField(null=False)
     
 
     def __str__(self):
-        return f"Task by {self.owner}: {self.task_type} {self.source} to {self.destination}"
+        return f"Задача от {self.owner}: {self.action} файла {self.source} в {self.destination}"
 
 
-"""
-Task:
-    id              1
-    owner           admin
-    task_type       upload
-    destination     yandex?
-    source          192.168.1.206/peregon/НА МОСКВУ/test
-    creation ts     2025.8.14 00:00:00
-    status          IN PROGRESS
-"""
+class UploadTask(Task):
+    class Destination(models.TextChoices):
+        YANDEX = "файлообменник (яндекс)"
+        
+    destination = models.TextField(choices=Destination, null=False)
+    source = models.FilePathField(path=settings.STORAGE_DIR, null=False)
