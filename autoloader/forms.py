@@ -15,7 +15,7 @@ from autoloader.models import UploadTask
 #     email = forms.EmailField(required=True, initial="vesti@gmail.com")
 
 
-class UploadDataForm(forms.ModelForm):
+class UploadData(forms.ModelForm):
     class Meta:
         model = UploadTask
-        fields = ["source", "destination", "notification_recipient"]
+        fields = ["source", "file_rename", "destination", "notification_recipient"]

@@ -191,7 +191,7 @@ HUEY = {
 DOWNLOADS_PATH = BASE_DIR / "autoloader" / "downloads"
 REMOTE_STORAGE = Path("Z:")
 STORAGE_DIR = Path("Z:/НА МОСКВУ/test")
-YANDEX_KOMIGOR_OAUTH_KEY = r"y0__xD3yPHOBRjdzTggxIjY0xNh8oggs0WNu2_0eA_vwjwwlHSi5Q"
+YANDEX_OAUTH_KEY = r"y0__xD3yPHOBRjdzTggxIjY0xNh8oggs0WNu2_0eA_vwjwwlHSi5Q"
 YANDEX_RESOURCE_DOWNLOAD_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources/download"""
 YANDEX_RESOURCE_METADATA_ENDP = r"""https://cloud-api.yandex.net/v1/disk/public/resources"""
 

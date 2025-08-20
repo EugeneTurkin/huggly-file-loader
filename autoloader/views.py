@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 from autoloader import forms, models
+from autoloader.file_loader import FileLoader
 
 
 if TYPE_CHECKING:
@@ -19,11 +20,11 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["GET"])
-def submit_upload_data(request):
+def submit_upload_data(request: HttpRequest) -> HttpResponse:
     initial = dict(source=settings.STORAGE_DIR,
                    notification_recipient="vesti@komigor.com",
-                   destination=models.UploadTask.Destination.YANDEX)
-    form = forms.UploadDataForm(initial=initial)
+                   destination=models.UploadTask.Destination.YANDEX.value)
+    form = forms.UploadData(initial=initial)
     
     return render(
         request=request,
@@ -34,21 +35,22 @@ def submit_upload_data(request):
 
 @require_http_methods(["POST"])
 def execute_upload(request: HttpRequest) -> HttpResponsePermanentRedirect:
-    new_task = models.UploadTask(
+    file_loader = FileLoader()
+    partial_upload_data = models.UploadTask(
         owner="admin",
-        action=models.Task.Action.UPLOAD,
-        status=models.Task.Status.IN_PROGRESS,
+        action=models.Task.Action.UPLOAD.value,
+        status=models.Task.Status.IN_PROGRESS.value,
     )
-    form = forms.UploadDataForm(request.POST, instance=new_task)
+    upload_data = forms.UploadData(request.POST, instance=partial_upload_data)
     
-
-    if form.is_valid():
+    if upload_data.is_valid():
         try:
-            form.instance.full_clean()
+            upload_data.instance.full_clean()
         except:
-            print("500 internal server error")
+            raise Exception("500 internal server error: input validation failed")
         else:
-            form.save()
+            upload_data.save()
+            file_loader.upload(upload_data)
 
     return redirect(
         "submit_upload_data",
